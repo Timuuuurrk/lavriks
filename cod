@@ -1,0 +1,19 @@
+import telebot
+bot=telebot.TeleBot('6643922482:AAGPogg8eNhFDwlqh6MYDSYRQIlTB0zDrkQ')
+@bot.message_handler(commands=['start'])
+def strt(message):
+    bot.send_message(message.chat.id,f'Привет,{message.from_user.first_name} {message.from_user.last_name}')
+@bot.message_handler(commands=['help'])
+def hlp(message):
+    bot.send_message(message.chat.id,'Infa',parse_mode='html')
+@bot.message_handler()
+def info(message):
+    s=message.text.lower()
+    if s.find('мяу')!=-1:
+        bot.send_message(message.chat.id,'ГАВ')
+    elif s=='id':
+        bot.reply_to(message,f'ID: {message.from_user.id}')
+
+while True:
+        bot.polling(none_stop=True, timeout=90)
+
