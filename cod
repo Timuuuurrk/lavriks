@@ -1,19 +1,263 @@
 import telebot
+import random
+import requests
+import json
+from telebot import types
+import webbrowser
+nameng='Lavrik'
+namerus='Лаврик'
+namerusmal='лаврик'
+with open("./snickers/kotiki.txt") as file:
+    koti = file.readline().split(',')
+with open("./snickers/kv.txt") as file:
+    kv = file.readline().split(',')
+with open("./snickers/celeb.txt") as file:
+    cele = file.readline().split(',')
+with open("./snickers/davlet.txt") as file:
+    davletich = file.readline().split(',')
+with open("./snickers/dog.txt")as file:
+    sobak=file.readline().split(',')
+wAPI='e56aca75f202defce1559a90473ab5de'
 bot=telebot.TeleBot('6643922482:AAGPogg8eNhFDwlqh6MYDSYRQIlTB0zDrkQ')
+@bot.message_handler(commands=['commands'])
+def coma(message):
+    markup=types.InlineKeyboardMarkup()
+    btn1=types.InlineKeyboardButton('Учёба',callback_data='study')
+    btn2=types.InlineKeyboardButton('Расписание',callback_data='schedule')
+    btn3=types.InlineKeyboardButton('БВИшки',callback_data='bvi')
+    markup.row(btn1)
+    markup.row(btn2,btn3)
+    bot.send_message(message.chat.id,'Список:', reply_markup=markup)
+
+@bot.callback_query_handler(func=lambda callback:True)
+def callback_message(callback):
+    if callback.data=='phys_st':
+        bot.send_message(callback.message.chat.id,'***Учебники по физике***\n\n1. Пинский 11кл.-         [pdf](https://drive.google.com/file/d/1tM_XccKkCEkUFZfkHSL0qMEhmWiU2a8A/view?pli=1)\n\n2. Пинский 10кл. -        [pdf](https://vk.com/doc4362558_344597684?hash=XAVamgaYmVjwReRdas1lkJb90vW7aRP5M9BsuXvldpH&dl=PpiPsGzhOkt60eRLJNrpSZS17Qzm8Ai7O6zm1vWdHTT)\n\n3. Мякишев 10кл. -      [pdf](https://drive.google.com/file/d/0B_8Cuk1ouT9kcEx3ZWNTNFdmZ0k/view?resourcekey=0-SVVQjD289J_HcykcjwZU5w)\n\n', parse_mode='Markdown')
+    elif callback.data=='physics':
+        mphys=types.InlineKeyboardMarkup()
+        mphysst1=types.InlineKeyboardButton('Книги',callback_data='phys_st')
+        mphysst2=types.InlineKeyboardButton('Дополнительно',callback_data='phys_dop')
+        mphys.row(mphysst1)
+        mphys.row(mphysst2)
+        bot.send_message(callback.message.chat.id,'Выберите одно:',reply_markup=mphys)
+    elif callback.data=='phys_dop':
+        file=open('./subjs/physi/phys-hint.docx','rb')
+        bot.send_document(callback.message.chat.id,file,caption='⚡Теория по физике🌠')
+    elif callback.data=='math':
+        mmath=types.InlineKeyboardMarkup()
+        mmath1=types.InlineKeyboardButton('Учебники',callback_data='math_st')
+        mmath2=types.InlineKeyboardButton('Записи',callback_data='math_plsmth')
+        mmath3=types.InlineKeyboardButton('Дополнительно',callback_data='math_dop')
+        mmath.row(mmath1)
+        mmath.row(mmath2)
+        mmath.row(mmath3)
+        bot.send_message(callback.message.chat.id,'МуР:',reply_markup=mmath)
+    elif callback.data=='math_plsmth':
+        zmth=types.InlineKeyboardMarkup()
+        zmth1=types.InlineKeyboardButton('Алгебра?',callback_data='alloh')
+        zmth2=types.InlineKeyboardButton('Геометрия?',callback_data='geomi')
+        zmth.row(zmth1,zmth2)
+        bot.send_message(callback.message.chat.id,'Мммм?',reply_markup=zmth)
+    elif callback.data=='math_dop':
+        file=open('./subjs/maths/stereo-hint.docx','rb')
+        bot.send_document(callback.message.chat.id,file,caption='Файл по стереометрии🤓')
+    elif callback.data=='alloh':
+        file = open('./subjs/maths/analys/mmmt.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file, caption='Не судите строго, это для опыта🤓')
+    elif callback.data=='geomi':
+        geomth=types.InlineKeyboardMarkup()
+        geomth1=types.InlineKeyboardButton('Планиметрия',callback_data='plange')
+        geomth2=types.InlineKeyboardButton('Стерео',callback_data='sterege')
+        geomth.row(geomth1,geomth2)
+        bot.send_message(callback.message.chat.id,'Что нужно?',reply_markup=geomth)
+    elif callback.data=='plange':
+        file = open('./subjs/maths/geom/planik.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file, caption='📐Геома🥰🤩')
+    elif callback.data=='sterege':
+        file = open('./subjs/maths/geom/stereoA.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file, caption='📐Стерео часть 1🎇')
+        file = open('./subjs/maths/geom/stereoB.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file, caption='📐Стерео часть 2🎆')
+    elif callback.data=='study':
+         mstudy=types.InlineKeyboardMarkup()
+         bst1=types.InlineKeyboardButton('Физика',callback_data='physics')
+         bst2=types.InlineKeyboardButton('Матеша',callback_data='math')
+         bst3=types.InlineKeyboardButton('Русич',callback_data='russian')
+         bst4=types.InlineKeyboardButton('Прога',callback_data='programming')
+         mstudy.row(bst1,bst2)
+         mstudy.row(bst3,bst4)
+         bot.send_message(callback.message.chat.id,'Выберите одно:',reply_markup=mstudy)
+    elif callback.data=='schedule':
+        file=open('./information/sched.png','rb')
+        bot.send_photo(callback.message.chat.id,file)
+    elif callback.data=='bvi':
+        mbvi=types.InlineKeyboardMarkup()
+        bst1 = types.InlineKeyboardButton('МГУ им. М.В. Ломоносова', callback_data='MSU')
+        bst2 = types.InlineKeyboardButton('МФТИ', callback_data='MIPT')
+        bst3 = types.InlineKeyboardButton('ВШЭ', callback_data='HSE')
+        bst4 = types.InlineKeyboardButton('ИТМО', callback_data='ITMO')
+        bst5 = types.InlineKeyboardButton('НИЯУ МИФИ', callback_data='MIFI')
+        bst6 = types.InlineKeyboardButton('МГТУ им. Баумана', callback_data='MSTU')
+        bst7 = types.InlineKeyboardButton('СПБГУ', callback_data='SPBU')
+        bst8 = types.InlineKeyboardButton('УРФУ', callback_data='URFU')
+        mbvi.row(bst1,bst2,bst3)
+        mbvi.row(bst4,bst5)
+        mbvi.row(bst6,bst7,bst8)
+        bot.send_message(callback.message.chat.id,'***🤓Льготы призерам и победам олимпиад!!!😎***\n\nВыберите нужный Вам ВУЗ:',reply_markup=mbvi,parse_mode='Markdown')
+    elif callback.data=='MSU':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали МГУ им. М.В.Ломоносова:🏛️👨‍💻')
+        file=open('./information/BVI/MSU.pdf','rb')
+        bot.send_document(callback.message.chat.id,file)
+    elif callback.data=='MIPT':
+        bot.send_message(callback.message.chat.id,'👨‍🎓Вы выбрали МФТИ:🏛️👨‍💻')
+        bot.send_message(callback.message.chat.id, '[site](https://pk.mipt.ru/bachelor/2024_olympiads/#100)',parse_mode='Markdown')
+    elif callback.data == 'MIFI':
+        bot.send_message(callback.message.chat.id, '👨‍🎓🥰Вы выбрали НИЯУ МИФИ😸:🏛️👨‍💻')
+        file = open('./information/BVI/MIFI.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+    elif callback.data == 'MSTU':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали МГТУ им. Баумана:🏛️👨‍💻')
+        file = open('./information/BVI/MSTU_bvi.docx', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+        file = open('./information/BVI/MSTU_100.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+    elif callback.data == 'ITMO':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали ИТМО(имбаааа😼):🏛️👨‍💻')
+        file = open('./information/BVI/ITMO.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+    elif callback.data == 'SPBU':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали СПБГУ:🏛️👨‍💻')
+        file = open('./information/BVI/SPBU.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+    elif callback.data == 'URFU':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали УРФУ:🏛️👨‍💻')
+        file = open('./information/BVI/URFU.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+    elif callback.data == 'HSE':
+        bot.send_message(callback.message.chat.id, '👨‍🎓Вы выбрали Вышку:🏛️👨‍💻')
+        file = open('./information/BVI/HSE.pdf', 'rb')
+        bot.send_document(callback.message.chat.id, file)
+
+@bot.message_handler(commands=['info'])
+def weba(message):
+    bot.send_message(message.chat.id,'🌟День рождения: 16.03.2024🎁✨\nМоральная поддержка бота и его жизнеобеспечение осуществляются благодаря сайту pythonanywhere.com 🥰😍\n[Сайт c исходниками😶‍🌫](https://github.com/Timuuuurrk/lavriks)',parse_mode='Markdown')
 @bot.message_handler(commands=['start'])
 def strt(message):
-    bot.send_message(message.chat.id,f'Привет,{message.from_user.first_name} {message.from_user.last_name}')
+    bot.send_message(message.chat.id,f'Привет,{message.from_user.first_name}!\n\nМеня зовут {namerus}, я тг бот, который еще не научился брать абсолюта Росатома. Однако я умею выполнять другие команды, чтобы увидеть их напиши "/help"')
 @bot.message_handler(commands=['help'])
 def hlp(message):
-    bot.send_message(message.chat.id,'Infa',parse_mode='html')
+    bot.send_message(message.chat.id,'Что я умею?\n\nВо-первых, я могу присылать различные стикеры. Для этого включи в сообщение "мур" или 🐶.\n\nВо-вторых, умею предсказывать вероятность события🧙‍ - просто отправь сообщение со словом вероятность.\n\nТакже у меня есть следующие команды:\n\n/weather city - получить данные о погоде в городе city (пиши на английском)\n\n/info - ссылки, связанные с ботом.\n\n Ещё ты можешь воспользоваться кнопками меню, чтобы посмотреть всякие приколы.',parse_mode='Markdown')
+@bot.message_handler(commands=['weather'])
+def get_weather(message):
+    buf=message.text.strip().lower()
+    city=buf[8:]
+    rek=requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={city}&appid={wAPI}&units=metric&lang=ru')
+    if rek.status_code!=200:
+        bot.reply_to(message,'У меня не получилось найти город с таким названием(  Проверь, что ты правильно указал(а) данные о нём')
+        return
+    data=json.loads(rek.text)
+    tempa=data["main"]["temp"]
+    flik=data["main"]["feels_like"]
+    s=str(rek.text)
+    desc=''
+    if s.find('пасмурно')!=-1:
+        desc='пасмурно'
+    elif s.find('ясно')!=-1:
+        desc='ясно'
+    elif s.find('облачно с прояснениями')!=-1:
+        desc='облачно с прояснениями'
+    elif s.find('небольшая облачность')!=-1:
+        desc='небольшая облачность'
+    elif s.find('переменная облачность')!=-1:
+        desc='переменная облачность'
+    elif s.find('небольшой дождь')!=-1:
+        desc='небольшой дождь'
+    elif s.find('небольшой снег')!=-1:
+        desc='небольшой снег'
+    kek=''
+    if int(flik)<-20:
+        kek='🥶'
+    elif int(flik)<0:
+        kek='🤧'
+    elif int(flik)<10:
+        kek='😇'
+    else:
+        kek='🥵'
+    gorod=data["name"]
+    bot.reply_to(message,f'Погода в {gorod}:\n\nТемпература:{tempa}°С\n\nОщущается как:{flik}°С{kek}\n\nХарактер погоды:{desc}')
+
 @bot.message_handler()
 def info(message):
     s=message.text.lower()
-    if s.find('мяу')!=-1:
-        bot.send_message(message.chat.id,'ГАВ')
-    elif s=='id':
-        bot.reply_to(message,f'ID: {message.from_user.id}')
+    if s.find('мяу')!=-1 or s.find('мур')!=-1:
+        bot.send_sticker(message.chat.id,random.choice(koti))
+    if s=='id':
+        bot.reply_to(message,f'Твой ID в тг: {message.from_user.id}')
+    if s.find('вероятность')!=-1:
+        ver=random.randint(0,100)
+        s=''
+        trek=random.randint(1,10)
+        if trek==1:s=f'Глубоко проанализировав данный вопрос, а также изучив необходимый материал, с вероятностью {ver}% я могу заявить, что это правда🤓'
+        elif trek==2:s=f'🐈Мяу! Да здесь все {ver}%'
+        elif trek==3:s=f'🧙🏻‍♂️Святой Амур говорит {ver}%'
+        elif trek==4:s=f'Выполнив всё дз по литре и перечитав Войну и Мир 5 раз🥱, я заявляю, что на {ver}% это правда😈'
+        elif trek==5:s=f'На основе 100500 прорешанных параметров моя мат. дедукция доказала, что это случится в {ver}% случаев🤯'
+        elif trek==6:s=f'Учёные из Церна спустя 5 лет аннигиляции электронов выдвинули гипотезу: ваша ситуация происходит в {ver} случаев из 100🥳'
+        elif trek==7:s=f'🤪Скубибуби на {ver}% мур🐈 из всех мяу!😜‍'
+        elif trek==8:s=f'Товарищи китайских товарищей рассчитали КПД🥵 {ver}% того, что вы не врёте.🤥'
+        elif trek==9:s=f'🦖Гоблин нашептал {ver}%'
+        elif trek==10:s=f'😻Ставлю {ver}% своих тяфкоинов💋 на то что это произойдет🥰!!!'
+        bot.send_message(message.chat.id,s)
+    if s.find('скибиди')!=-1:
+        kek=random.randint(1,4)
+        file=open(f'./skib/n{kek}.mp4','rb')
+        bot.send_video(message.chat.id,file)
+    if s.find('срасибо')!=-1:
+        bot.send_sticker(message.chat.id,random.choice(kv))
+    if s.find('\U0001F60E')!=-1:
+        kr=random.randint(1,8)
+        file=open(f'./statham/rof{kr}.png','rb')
+        bot.send_photo(message.chat.id,file)
+    if s.find('\U0001F37E')!=-1:
+        bot.send_message(message.chat.id,'ПОЗДРАВЛЯЮ ВАС, КИТАЙСКИЕ ТОВАРИЩИ)))!!!!!')
+        bot.send_sticker(message.chat.id,random.choice(cele))
+    if s.find('😼')!=-1:
+        kr=random.randint(1,1)
+        file=open(f'./krt/cot{kr}.gif','rb')
+        bot.send_animation(message.chat.id,file)
+    if s.find('🐶')!=-1:
+        bot.send_sticker(message.chat.id,random.choice(sobak))
+    if s.find('не понимаю')!=-1 or s.find('не пон')!=-1 or s.find('фамилия')!=-1:
+        bot.send_sticker(message.chat.id, random.choice(davletich))
+    if s.find('получить id')!=-1:
+        bot.send_message(message.chat.id,'Скинь ссылку на сообщение, и я скажу его id')
+    if s.find('https://t.me/c/')!=-1:
+        pos=s.find('https://t.me/c/')
+        pos+=26
+        buf=''
+        while pos<len(s) and s[pos].isdigit():
+            buf+=s[pos]
+            pos+=1
+        bot.send_message(message.chat.id,f'ID скинутого сообщения {int(buf)}')
+    if s.find('удалить')!=-1:
+        pos=s.find('удалить')
+        pos+=8
+        buf=''
+        while pos<len(s) and s[pos].isdigit():
+            buf+=s[pos]
+            pos+=1
+        if buf=='':
+            bot.send_message(message.chat.id,'С огнём шутки плохи...')
+        else:
+            krya=message.chat.id
+            bot.delete_message(message.chat.id, message.message_id)
+            bot.delete_message(krya,int(buf))
+    if s.find('idm')!=-1:
+        bot.send_message(message.chat.id,f'ID сообщения:{message.message_id}')
+        bot.send_message(message.chat.id,f'ID чата:{message.chat.id}')
+    if s.find(namerusmal)!=-1:
+        bot.send_message(message.chat.id,'Что хотите?🙂')
 
 while True:
-        bot.polling(none_stop=True, timeout=90)
+        bot.polling(none_stop=True, timeout=9000)
 
